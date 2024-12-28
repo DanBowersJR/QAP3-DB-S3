@@ -3,26 +3,31 @@ const { Pool } = require('pg');
 const app = express();
 const PORT = 3000;
 
-
-const pool = new Pool({        // Add this block for the database connection
-    user: 'postgres',          
-    host: 'localhost',        
-    database: 'tasks_db',    
-    password: '1234', // Replace with your password
-    port: 5432,               
+// PostgreSQL connection setup
+const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'tasks_db',
+    password: '1234', // Replace with your actual PostgreSQL password
+    port: 5432,
 });
 
 app.use(express.json());
 
-let tasks = [
-    { id: 1, description: 'Buy groceries', status: 'incomplete' },
-    { id: 2, description: 'Read a book', status: 'complete' },
-];
-
-// GET /tasks - Get all tasks
+// Temporary test route to verify database connection
 app.get('/test-db', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW()');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET /tasks - Get all tasks from the database
+app.get('/tasks', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM tasks');
         res.json(result.rows);
     } catch (error) {
         res.status(500).json({ error: error.message });
