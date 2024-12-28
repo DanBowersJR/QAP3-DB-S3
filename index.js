@@ -1,6 +1,16 @@
 const express = require('express');
+const { Pool } = require('pg');
 const app = express();
 const PORT = 3000;
+
+
+const pool = new Pool({        // Add this block for the database connection
+    user: 'postgres',          
+    host: 'localhost',        
+    database: 'tasks_db',    
+    password: '1234', // Replace with your password
+    port: 5432,               
+});
 
 app.use(express.json());
 
@@ -10,8 +20,13 @@ let tasks = [
 ];
 
 // GET /tasks - Get all tasks
-app.get('/tasks', (req, res) => {
-    res.json(tasks);
+app.get('/test-db', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT NOW()');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // POST /tasks - Add a new task
